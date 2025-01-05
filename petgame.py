@@ -1,5 +1,9 @@
 import random
 import time
+import os
+
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 class Pet:
     def __init__(self, name):
@@ -54,13 +58,29 @@ class Pet:
         return win_count
 
 def input_with_timer(prompt, timeout):
-    print(f"(You have {timeout} seconds to respond)")
+    clear_screen()
+    # Show pet menu
+    print("== Update the Pet ==")
+    print("1. Feed the Pet")
+    print("2. Play with Pet")
+    print("3. Rest Time")
+    print("4. Exit to Main Menu")
+    
+    print(f"\nYou have {timeout} seconds to respond!")
+    
+    # Start timing
     start_time = time.time()
-    response = input(prompt)
+    
+    # Get input
+    user_input = input(prompt)
+    
+    # Check if time is up
     if time.time() - start_time > timeout:
-        print("\nTime's up! No input detected.")
+        print("\nTime's up! Too slow!")
+        time.sleep(1)  # Show the message for a second
         return None
-    return response
+    
+    return user_input
 
 def save_game(pet):
     with open("savegame.txt", "w") as file:
@@ -92,14 +112,12 @@ def pet_game(pet):
             print(f"\nCongratulations! {pet.pet_name} is super happy and energetic. You win!")
             break
 
-        print("\n== Update the Pet ==")
-        print("1. Feed the Pet")
-        print("2. Play with Pet")
-        print("3. Rest Time")
-        print("4. Exit to Main Menu")
-        choice = input_with_timer("Enter your choice (1/2/3/4): ", 10)
+        # Show current pet status before choice
+        pet.pet_status()
+        choice = input_with_timer("Enter your choice (1/2/3/4): ", 12)  # Changed to 12 seconds
 
         if choice is None:
+            print(f"\n{pet.pet_name} got distracted while waiting!")
             pet.random_event()
         elif choice == "1":
             pet.feed_pet()
@@ -114,10 +132,12 @@ def pet_game(pet):
             print("Invalid choice. Please try again.")
 
         win_count = pet.check_win(win_count)
+        time.sleep(1)  # Give time to read the update
 
 def main():
     pet = None
     while True:
+        clear_screen()
         print("\n== Adventure Game ==")
         print("1. Pet Game")
         print("2. View Your Pet's Status")
@@ -134,22 +154,27 @@ def main():
         elif choice == "2":
             if pet:
                 pet.pet_status()
+                input("\nPress Enter to continue...")
             else:
                 print("\nYou need to start the pet game first!")
+                time.sleep(1)
         elif choice == "3":
             if pet:
                 save_game(pet)
             else:
                 print("\nStart a game first to save progress!")
+            time.sleep(1)
         elif choice == "4":
             loaded_pet = load_game()
             if loaded_pet:
                 pet = loaded_pet
+            time.sleep(1)
         elif choice == "5":
             print("You exited the game. Goodbye!")
             break
         else:
             print("Invalid choice. Please try again.")
+            time.sleep(1)
 
 if __name__ == "__main__":
     main()
