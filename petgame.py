@@ -10,6 +10,7 @@ class Pet:
         self.pet_name = name
         self.hunger = 50
         self.happiness = 50
+        
         self.energy = 50
 
     def is_sick(self):
